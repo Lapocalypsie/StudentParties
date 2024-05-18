@@ -1,0 +1,33 @@
+{# templates/dj/show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/dj_show.css') }}">
+{% endblock %}
+
+{% block body %}
+    <h1>DJ Details</h1>
+    <dl>
+        <dt>Last Name:</dt>
+        <dd>{{ dj.Nom }}</dd>
+        <dt>First Name:</dt>
+        <dd>{{ dj.Prenom }}</dd>
+        <dt>Email:</dt>
+        <dd>{{ dj.email }}</dd>
+        <dt>Telephone:</dt>
+        <dd>{{ dj.tel }}</dd>
+        <dt>Portfolio:</dt>
+        <dd>{{ dj.portfolio }}</dd>
+        <dt>Date of Event:</dt>
+        <dd>{{ dj.dateSoiree ? dj.dateSoiree|date('Y-m-d H:i:s') : 'N/A' }}</dd>
+        <dt>Has Material:</dt>
+        <dd>{{ dj.hasMaterial ? 'Yes' : 'No' }}</dd>
+        <dt>Color:</dt>
+        <dd>{{ dj.color }}</dd>
+        <dt>Number of Speakers:</dt>
+        <dd>{{ dj.nbSpeaker }}</dd>
+        <dt>Power of Speakers:</dt>
+        <dd>{{ dj.powerSpeaker }}</dd>
+    </dl>
+    <a href="{{ path('dj_index') }}">Back to DJ List</a>
+{% endblock %}

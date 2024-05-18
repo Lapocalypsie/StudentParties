@@ -1,0 +1,15 @@
+{# templates/dj/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/new_dj.css') }}">
+{% endblock %}
+
+{% block body %}
+    <h1>Edit Dj</h1>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn">{{ button_label|default('Update') }}</button>
+    {{ form_end(form) }}
+    <a href="{{ path('dj_index') }}">Back to list</a>
+{% endblock %}

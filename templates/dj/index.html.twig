@@ -1,0 +1,52 @@
+{# templates/dj/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/dj_index.css') }}">
+{% endblock %}
+
+{% block body %}
+    <h1>DJ List</h1>
+
+    {# Logout link #}
+    <div class="logout-link">
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <a href="{{ path('app_logout') }}" class="logout-link-anchor">Logout</a>
+        {% endif %}
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Modify</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dj in djs %}
+                <tr>
+                    <td><a href="{{ path('dj_show', {id: dj.id}) }}">{{ dj.Nom }}</a></td>
+                    <td>{{ dj.Prenom }}</td>
+                    <td>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('dj_edit', {id: dj.id}) }}">Modify</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <form method="post" action="{{ path('dj_delete', {id: dj.id}) }}" style="display:inline-block;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ dj.id) }}">
+                                <button type="submit">Delete</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if is_granted('ROLE_USER') or is_granted('ROLE_ADMIN')%}
+    <a href="{{ path('dj_new') }}" class="create-new">Create new</a>
+    {% endif %}
+{% endblock %}

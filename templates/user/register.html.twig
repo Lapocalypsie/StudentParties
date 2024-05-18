@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+{% endblock %}
+
+{% block title %}Register - TD4{% endblock %}
+
+{% block meta_description %}Sign up for a new account on Our Website Name.{% endblock %}
+
+{% block meta_keywords %}register, sign up, create account.{% endblock %}
+
+{% block meta %}
+    <meta name="robots" content="index, follow">
+{% endblock %}
+
+{% block body %}
+    <h1>Register</h1>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">Register</button>
+    {{ form_end(form) }}
+    <a href="{{ path('dj_index') }}">Back to list</a>
+{% endblock %}
