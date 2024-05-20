@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class DjController extends AbstractController
 {
@@ -26,54 +27,83 @@ class DjController extends AbstractController
     }
 
     #[Route('/dj/new', name: 'dj_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $dj = new Dj();
         $form = $this->createForm(DjType::class, $dj);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                $imageDirectory = $this->getParameter('kernel.project_dir') . '/public/DJ';
+
+                if (!file_exists($imageDirectory)) {
+                    mkdir($imageDirectory, 0755, true);
+                }
+
+                $imageFile->move(
+                    $imageDirectory,
+                    $newFilename
+                );
+
+                $dj->setImagePath('/DJ/' . $newFilename);
+            }
+
             $entityManager->persist($dj);
             $entityManager->flush();
 
-            return $this->redirectToRoute('dj_index');
+            return $this->redirectToRoute('dj_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('dj/new.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    #[Route('/dj/{id}', name: 'dj_show')]
-    public function show(Dj $dj): Response
-    {
-        return $this->render('dj/show.html.twig', [
             'dj' => $dj,
+            'form' => $form,
         ]);
     }
 
     #[Route('/dj/{id}/edit', name: 'dj_edit')]
     #[IsGranted('ROLE_ADMIN')]
-    public function edit(Request $request, Dj $dj, EntityManagerInterface $entityManager, AuthorizationCheckerInterface $authChecker): Response
+    public function edit(Request $request, Dj $dj, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
-        // Check if the current user has the required role
-        if (!$authChecker->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('Only administrators can access this page.');
-        }
-
         $form = $this->createForm(DjType::class, $dj);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                $imageDirectory = $this->getParameter('kernel.project_dir') . '/public/DJ';
+
+                if (!file_exists($imageDirectory)) {
+                    mkdir($imageDirectory, 0755, true);
+                }
+
+                $imageFile->move(
+                    $imageDirectory,
+                    $newFilename
+                );
+
+                $dj->setImagePath('/DJ/' . $newFilename);
+            }
+
             $entityManager->flush();
 
-            return $this->redirectToRoute('dj_index');
+            return $this->redirectToRoute('dj_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('dj/edit.html.twig', [
-            'form' => $form->createView(),
+            'dj' => $dj,
+            'form' => $form,
         ]);
     }
 
@@ -87,5 +117,14 @@ class DjController extends AbstractController
         }
 
         return $this->redirectToRoute('dj_index');
+    }
+
+    
+    #[Route('/dj/{id}', name:"dj_show", methods: ['GET'])]
+    public function show(Dj $dj): Response
+    {
+        return $this->render('dj/show.html.twig', [
+            'dj' => $dj,
+        ]);
     }
 }

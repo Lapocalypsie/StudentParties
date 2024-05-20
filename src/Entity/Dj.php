@@ -44,6 +44,10 @@ class Dj
     #[ORM\Column(nullable: true)]
     private ?int $powerSpeaker = null;
 
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $imagePath = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -165,6 +169,18 @@ class Dj
     public function setPowerSpeaker(?int $powerSpeaker): static
     {
         $this->powerSpeaker = $powerSpeaker;
+
+        return $this;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return $this->imagePath;
+    }
+
+    public function setImagePath(?string $imagePath): self
+    {
+        $this->imagePath = $imagePath;
 
         return $this;
     }
